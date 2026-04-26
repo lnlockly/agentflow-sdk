@@ -592,8 +592,7 @@ export type ProviderKeyCategory =
   | 'image'
   | 'video'
   | 'audio'
-  | 'research'
-  | 'oauth_cloud';
+  | 'research';
 
 export type ProviderKeyAuthType = 'api_key' | 'oauth';
 
