@@ -585,6 +585,89 @@ export interface TeamsListResponse {
   items: TeamSummary[];
 }
 
+// ---------------- Provider Keys (BYOK) ----------------
+
+export type ProviderKeyCategory =
+  | 'llm'
+  | 'image'
+  | 'video'
+  | 'audio'
+  | 'research'
+  | 'oauth_cloud';
+
+export type ProviderKeyAuthType = 'api_key' | 'oauth';
+
+export interface ProviderCatalogEntry {
+  provider: string;
+  name: string;
+  auth: ProviderKeyAuthType[];
+  envVar: string;
+  testUrl?: string;
+  scopes?: string[];
+}
+
+export type ProviderCatalog = Record<ProviderKeyCategory, ProviderCatalogEntry[]>;
+
+export interface ProviderCatalogResponse {
+  ok: true;
+  catalog: ProviderCatalog;
+}
+
+export interface ProviderKey {
+  id: number;
+  category: ProviderKeyCategory | string;
+  provider: string;
+  auth_type: ProviderKeyAuthType | string;
+  label: string | null;
+  /** First 8 chars of the raw key + `***` — safe to render anywhere. */
+  masked_prefix: string;
+  rotation_priority: number;
+  rentable: boolean;
+  rent_price_flow: string | null;
+  is_active: boolean;
+  created_at: string;
+  last_used_at: string | null;
+  total_calls: number;
+  last_test_at: string | null;
+  last_test_ok: boolean | null;
+  last_test_error: string | null;
+  meta: Record<string, unknown>;
+}
+
+export interface ProviderKeysListResponse {
+  ok: true;
+  items: ProviderKey[];
+}
+
+export interface ProviderKeyResponse {
+  ok: true;
+  item: ProviderKey;
+}
+
+export interface ProviderKeyAddRequest {
+  category: ProviderKeyCategory | string;
+  provider: string;
+  auth_type: ProviderKeyAuthType;
+  /** Plaintext API key or OAuth bundle (JSON). Sent ONCE — server seals it. */
+  value: string;
+  label?: string | null;
+  oauth_meta?: Record<string, unknown>;
+}
+
+export interface ProviderKeyUpdateRequest {
+  label?: string | null;
+  rotation_priority?: number;
+  rentable?: boolean;
+  rent_price_flow?: string | null;
+  is_active?: boolean;
+}
+
+export interface ProviderKeyTestResponse {
+  ok: boolean;
+  status?: number;
+  error?: string;
+}
+
 // ---------------- Knowledge Base ----------------
 
 export interface KbDocument {

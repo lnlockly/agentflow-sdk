@@ -20,6 +20,7 @@ import { MarketplaceResource } from './resources/marketplace.js';
 import { MeResource } from './resources/me.js';
 import { PayoutsResource } from './resources/payouts.js';
 import { ProjectsResource } from './resources/projects.js';
+import { ProviderKeysResource } from './resources/providerKeys.js';
 import { ReferralsResource } from './resources/referrals.js';
 import { SearchResource } from './resources/search.js';
 import { SubscriptionsResource } from './resources/subscriptions.js';
@@ -38,6 +39,7 @@ export class AgentFlow {
   public readonly marketplace: MarketplaceResource;
   public readonly subscriptions: SubscriptionsResource;
   public readonly payouts: PayoutsResource;
+  public readonly providerKeys: ProviderKeysResource;
   public readonly aiAssist: AiAssistResource;
   public readonly voice: VoiceResource;
   public readonly agents: AgentsResource;
@@ -59,6 +61,7 @@ export class AgentFlow {
     this.marketplace = new MarketplaceResource(this.http);
     this.subscriptions = new SubscriptionsResource(this.http);
     this.payouts = new PayoutsResource(this.http);
+    this.providerKeys = new ProviderKeysResource(this.http);
     this.aiAssist = new AiAssistResource(this.http);
     this.voice = new VoiceResource(this.http);
     this.agents = new AgentsResource(this.http);
