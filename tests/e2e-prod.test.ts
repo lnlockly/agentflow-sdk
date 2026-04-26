@@ -88,4 +88,55 @@ authedDesc('prod e2e — API key lifecycle (authed)', () => {
       expect(threw).toBe(true);
     },
   );
+
+  it(
+    'metering: create with limits → rate-limit 429 → usage shows recorded calls',
+    { timeout: 30_000 },
+    async () => {
+      const owner = new AgentFlow({ bearerToken: TEST_BEARER });
+      const name = `sdk-meter-${Date.now()}`;
+      const created = await owner.apiKeys.create({
+        name,
+        rate_limit_rpm: 2,
+        spend_limit_flow: '5',
+        spend_period: 'day',
+      });
+
+      try {
+        const consumer = new AgentFlow({ apiKey: created.key, maxRetries: 0 });
+
+        // 2 calls allowed, 3rd → 429.
+        await consumer.me.get();
+        await consumer.me.get();
+        let rateLimited = false;
+        try {
+          await consumer.me.get();
+        } catch (err) {
+          rateLimited = true;
+          expect((err as { status?: number }).status).toBe(429);
+        }
+        expect(rateLimited).toBe(true);
+
+        // Update: bump rpm so usage queries don't get throttled.
+        const updated = await owner.apiKeys.update(created.id, {
+          rate_limit_rpm: 60,
+          spend_limit_flow: '10',
+        });
+        expect(updated.item.rate_limit_rpm).toBe(60);
+        expect(updated.item.spend_limit_flow).toBe('10.000000');
+
+        // Usage rolls in best-effort — give the API a moment.
+        await new Promise((r) => setTimeout(r, 500));
+        const usage = await owner.apiKeys.usage(created.id, { since: 'day' });
+        expect(usage.ok).toBe(true);
+        expect(usage.total_calls).toBeGreaterThanOrEqual(2);
+
+        const recent = await owner.apiKeys.recent(created.id, { limit: 10 });
+        expect(recent.ok).toBe(true);
+        expect(recent.items.length).toBeGreaterThanOrEqual(2);
+      } finally {
+        await owner.apiKeys.revoke(created.id);
+      }
+    },
+  );
 });
