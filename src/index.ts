@@ -10,6 +10,7 @@
 
 import { type AgentFlowConfig, HttpClient } from './client.js';
 import { AiAssistResource } from './resources/aiAssist.js';
+import { ApiKeysResource } from './resources/apiKeys.js';
 import { AuthResource } from './resources/auth.js';
 import { MarketplaceResource } from './resources/marketplace.js';
 import { MeResource } from './resources/me.js';
@@ -22,6 +23,7 @@ import { VoiceResource } from './resources/voice.js';
 export class AgentFlow {
   public readonly http: HttpClient;
   public readonly auth: AuthResource;
+  public readonly apiKeys: ApiKeysResource;
   public readonly me: MeResource;
   public readonly tokens: TokensResource;
   public readonly projects: ProjectsResource;
@@ -34,6 +36,7 @@ export class AgentFlow {
   constructor(config: AgentFlowConfig = {}) {
     this.http = new HttpClient(config);
     this.auth = new AuthResource(this.http);
+    this.apiKeys = new ApiKeysResource(this.http);
     this.me = new MeResource(this.http);
     this.tokens = new TokensResource(this.http);
     this.projects = new ProjectsResource(this.http);

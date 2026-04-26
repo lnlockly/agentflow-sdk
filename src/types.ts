@@ -257,6 +257,42 @@ export interface VoiceTtsRequest {
   lang?: string;
 }
 
+// ---------------- API Keys ----------------
+
+export interface ApiKey {
+  id: number;
+  name: string;
+  /** First 12 chars of the raw key — safe to render in UIs. */
+  prefix: string;
+  created_at: string;
+  last_used_at: string | null;
+}
+
+export interface ApiKeysListResponse {
+  ok: true;
+  items: ApiKey[];
+}
+
+/**
+ * Returned ONCE on creation. Save `key` immediately — the server will
+ * never disclose it again; subsequent list responses only carry `prefix`.
+ */
+export interface ApiKeyCreated {
+  ok: true;
+  id: number;
+  name: string;
+  prefix: string;
+  /** Full raw key — show to the user once, then drop it. */
+  key: string;
+  created_at: string;
+  /** Human warning the API attaches to the create response. */
+  warning?: string;
+}
+
+export interface ApiKeyCreateRequest {
+  name: string;
+}
+
 // ---------------- Pagination ----------------
 
 export interface CursorPage<T> {
